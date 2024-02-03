@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
+use App\Model\Enum\GameType;
 use App\Repository\GameRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
@@ -17,11 +17,8 @@ class Game
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-    private ?int $minPlayers = null;
-
-    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-    private ?int $maxPlayers = null;
+    #[ORM\Column(length: 255, enumType: GameType::class)]
+    private ?GameType $type = null;
 
     public function getId(): ?int
     {
@@ -40,26 +37,14 @@ class Game
         return $this;
     }
 
-    public function getMinPlayers(): ?int
+    public function getType(): ?GameType
     {
-        return $this->minPlayers;
+        return $this->type;
     }
 
-    public function setMinPlayers(?int $minPlayers): static
+    public function setType(GameType $type): static
     {
-        $this->minPlayers = $minPlayers;
-
-        return $this;
-    }
-
-    public function getMaxPlayers(): ?int
-    {
-        return $this->maxPlayers;
-    }
-
-    public function setMaxPlayers(?int $maxPlayers): static
-    {
-        $this->maxPlayers = $maxPlayers;
+        $this->type = $type;
 
         return $this;
     }

@@ -19,12 +19,12 @@ class Party
     #[ORM\JoinColumn(nullable: false)]
     private ?Game $game = null;
 
-    #[ORM\ManyToMany(targetEntity: Player::class)]
-    private Collection $players;
+    #[ORM\OneToMany(mappedBy: 'party', targetEntity: Team::class, orphanRemoval: true)]
+    private Collection $teams;
 
     public function __construct()
     {
-        $this->players = new ArrayCollection();
+        $this->teams = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -45,25 +45,31 @@ class Party
     }
 
     /**
-     * @return Collection<int, Player>
+     * @return Collection<int, Team>
      */
-    public function getPlayers(): Collection
+    public function getTeams(): Collection
     {
-        return $this->players;
+        return $this->teams;
     }
 
-    public function addPlayer(Player $player): static
+    public function addTeam(Team $team): static
     {
-        if (!$this->players->contains($player)) {
-            $this->players->add($player);
+        if (!$this->teams->contains($team)) {
+            $this->teams->add($team);
+            $team->setParty($this);
         }
 
         return $this;
     }
 
-    public function removePlayer(Player $player): static
+    public function removeTeam(Team $team): static
     {
-        $this->players->removeElement($player);
+        if ($this->teams->removeElement($team)) {
+            // set the owning side to null (unless already changed)
+            if ($team->getParty() === $this) {
+                $team->setParty(null);
+            }
+        }
 
         return $this;
     }
